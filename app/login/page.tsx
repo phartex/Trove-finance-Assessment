@@ -58,47 +58,17 @@ export default function LoginPage() {
   };
 
   return (
-    <div 
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'var(--bg-page)',
-        padding: 'var(--spacing-md)',
-      }}
-    >
-      <div 
-        className="card fade-in"
-        style={{
-          width: '100%',
-          maxWidth: '420px',
-          padding: 'var(--spacing-2xl)',
-        }}
-      >
+    <div className="min-h-screen flex items-center justify-center bg-bg-page p-4">
+      <div className="bg-card-surface rounded-2xl border border-border p-8 sm:p-12 w-full max-w-md shadow-sm animate-fade-in">
         {/* Logo/Brand */}
-        <div style={{ textAlign: 'center', marginBottom: 'var(--spacing-xl)' }}>
-          <div 
-            style={{
-              width: '64px',
-              height: '64px',
-              backgroundColor: 'var(--trove-green)',
-              borderRadius: 'var(--radius-xl)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto var(--spacing-md)',
-            }}
-          >
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-trove-green rounded-2xl flex items-center justify-center mx-auto mb-4">
             <svg 
-              width="32" 
-              height="32" 
+              className="w-8 h-8 text-white"
               viewBox="0 0 24 24" 
               fill="none" 
-              stroke="white" 
+              stroke="currentColor" 
               strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
             >
               <path d="M3 3v18h18"/>
               <path d="M18 17V9"/>
@@ -106,34 +76,21 @@ export default function LoginPage() {
               <path d="M8 17v-3"/>
             </svg>
           </div>
-          <h1 
-            style={{
-              fontSize: '24px',
-              fontWeight: 600,
-              color: 'var(--text-default)',
-              marginBottom: 'var(--spacing-xs)',
-            }}
-          >
+          <h1 className="text-2xl font-semibold text-text-default mb-1">
             Welcome to Trove
           </h1>
-          <p style={{ color: 'var(--text-neutral)', fontSize: '14px' }}>
+          <p className="text-sm text-text-neutral">
             Sign in to access your portfolio
           </p>
         </div>
 
         {/* Login Form */}
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-lg)' }}>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           {/* Email Field */}
           <div>
             <label 
               htmlFor="email" 
-              style={{
-                display: 'block',
-                fontSize: '13px',
-                fontWeight: 500,
-                color: 'var(--text-default)',
-                marginBottom: 'var(--spacing-sm)',
-              }}
+              className="block text-sm font-medium text-text-default mb-2"
             >
               Email Address
             </label>
@@ -148,16 +105,13 @@ export default function LoginPage() {
                 }
               }}
               placeholder="Enter your email"
-              className={`input ${errors.email ? 'input-error' : ''}`}
               disabled={isLoading}
+              className={`w-full px-4 py-3 bg-bg-default border rounded-xl text-sm text-text-default placeholder:text-text-disabled focus:outline-none focus:border-trove-green focus:bg-card-surface transition-colors ${
+                errors.email ? 'border-negative' : 'border-border'
+              }`}
             />
             {errors.email && (
-              <span style={{ 
-                color: 'var(--negative)', 
-                fontSize: '12px', 
-                marginTop: 'var(--spacing-xs)',
-                display: 'block',
-              }}>
+              <span className="text-xs text-negative mt-1 block">
                 {errors.email}
               </span>
             )}
@@ -167,13 +121,7 @@ export default function LoginPage() {
           <div>
             <label 
               htmlFor="password" 
-              style={{
-                display: 'block',
-                fontSize: '13px',
-                fontWeight: 500,
-                color: 'var(--text-default)',
-                marginBottom: 'var(--spacing-sm)',
-              }}
+              className="block text-sm font-medium text-text-default mb-2"
             >
               Password
             </label>
@@ -188,16 +136,13 @@ export default function LoginPage() {
                 }
               }}
               placeholder="Enter your password"
-              className={`input ${errors.password ? 'input-error' : ''}`}
               disabled={isLoading}
+              className={`w-full px-4 py-3 bg-bg-default border rounded-xl text-sm text-text-default placeholder:text-text-disabled focus:outline-none focus:border-trove-green focus:bg-card-surface transition-colors ${
+                errors.password ? 'border-negative' : 'border-border'
+              }`}
             />
             {errors.password && (
-              <span style={{ 
-                color: 'var(--negative)', 
-                fontSize: '12px', 
-                marginTop: 'var(--spacing-xs)',
-                display: 'block',
-              }}>
+              <span className="text-xs text-negative mt-1 block">
                 {errors.password}
               </span>
             )}
@@ -205,15 +150,7 @@ export default function LoginPage() {
 
           {/* General Error */}
           {loginError && (
-            <div 
-              style={{
-                padding: '12px 16px',
-                backgroundColor: '#FEE2E2',
-                borderRadius: 'var(--radius-md)',
-                color: 'var(--negative)',
-                fontSize: '13px',
-              }}
-            >
+            <div className="px-4 py-3 bg-red-100 rounded-xl text-sm text-negative">
               {loginError}
             </div>
           )}
@@ -221,13 +158,12 @@ export default function LoginPage() {
           {/* Submit Button */}
           <button
             type="submit"
-            className="btn btn-primary"
             disabled={isLoading}
-            style={{ width: '100%', marginTop: 'var(--spacing-sm)' }}
+            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-trove-green text-white rounded-xl font-medium hover:bg-trove-green/90 disabled:opacity-60 disabled:cursor-not-allowed transition-colors mt-2"
           >
             {isLoading ? (
               <>
-                <span className="spinner" style={{ borderTopColor: 'white' }} />
+                <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 <span>Signing in...</span>
               </>
             ) : (
@@ -237,17 +173,8 @@ export default function LoginPage() {
         </form>
 
         {/* Demo Credentials */}
-        <div 
-          style={{
-            marginTop: 'var(--spacing-xl)',
-            padding: 'var(--spacing-md)',
-            backgroundColor: 'var(--bg-default)',
-            borderRadius: 'var(--radius-md)',
-            fontSize: '12px',
-            color: 'var(--text-neutral)',
-          }}
-        >
-          <strong style={{ color: 'var(--text-default)' }}>Demo:</strong> Use any valid email and password (min 6 chars)
+        <div className="mt-8 p-4 bg-bg-default rounded-xl text-xs text-text-neutral">
+          <strong className="text-text-default">Demo:</strong> Use any valid email and password (min 6 chars)
         </div>
       </div>
     </div>

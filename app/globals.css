@@ -1,344 +1,87 @@
 @import "tailwindcss";
 
-/* Trove Design System - Color Palette */
-:root {
+/* Trove Design System - Tailwind CSS v4 Configuration */
+@theme {
   /* Primary Colors */
-  --trove-green: #059A83;
-  --trove-green-light: #E0F5E1;
+  --color-trove-green: #059A83;
+  --color-trove-green-light: #E0F5E1;
   
   /* Semantic Colors */
-  --success: #10AE17;
-  --negative: #BF221C;
-  --accent-blue: #00B6DF;
-  --purple: #7B79C9;
-  --cream: #F2C891;
-  --dark-blue: #00323D;
+  --color-success: #10AE17;
+  --color-negative: #BF221C;
+  --color-accent-blue: #00B6DF;
+  --color-purple: #7B79C9;
+  --color-cream: #F2C891;
+  --color-dark-blue: #00323D;
   
   /* Background Colors */
-  --bg-canvas: #FBFBFB;
-  --bg-page: #F5F1EE;
-  --bg-default: #F2F6F6;
-  --card-surface: #FFFFFF;
+  --color-bg-canvas: #FBFBFB;
+  --color-bg-page: #F5F1EE;
+  --color-bg-default: #F2F6F6;
+  --color-card-surface: #FFFFFF;
   
   /* Text Colors */
-  --text-default: #13342F;
-  --text-neutral: #687D7A;
-  --text-disabled: #92A29F;
+  --color-text-default: #13342F;
+  --color-text-neutral: #687D7A;
+  --color-text-disabled: #92A29F;
   
   /* Border Colors */
-  --border-color: #DBDFDF;
+  --color-border: #DBDFDF;
   
-  /* Spacing */
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
-  --spacing-2xl: 48px;
-  
-  /* Border Radius */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 14px;
-  --radius-xl: 16px;
-  
-  /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  /* Pending/Warning */
+  --color-pending-bg: #FFF4E0;
+  --color-pending-text: #F5A623;
 }
 
-@theme inline {
-  --color-background: var(--bg-canvas);
-  --color-foreground: var(--text-default);
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
+/* Base layer for body styles */
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 
-/* Base Styles */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+  html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-html {
-  font-size: 16px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-body {
-  background-color: var(--bg-page);
-  color: var(--text-default);
-  font-family: var(--font-sans);
-  line-height: 1.5;
-  min-height: 100vh;
-}
-
-/* Typography */
-h1, h2, h3, h4, h5, h6 {
-  color: var(--text-default);
-  font-weight: 600;
-}
-
-/* Utility Classes */
-.text-default {
-  color: var(--text-default);
-}
-
-.text-neutral {
-  color: var(--text-neutral);
-}
-
-.text-disabled {
-  color: var(--text-disabled);
-}
-
-.text-success {
-  color: var(--success);
-}
-
-.text-negative {
-  color: var(--negative);
-}
-
-.text-primary {
-  color: var(--trove-green);
-}
-
-/* Background Colors */
-.bg-canvas {
-  background-color: var(--bg-canvas);
-}
-
-.bg-page {
-  background-color: var(--bg-page);
-}
-
-.bg-default {
-  background-color: var(--bg-default);
-}
-
-.bg-card {
-  background-color: var(--card-surface);
-}
-
-/* Card Styles */
-.card {
-  background-color: var(--card-surface);
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
-  padding: var(--spacing-lg);
-}
-
-/* Button Styles */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-sm);
-  padding: 12px 24px;
-  border-radius: var(--radius-lg);
-  font-weight: 500;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: none;
-  outline: none;
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.btn-primary {
-  background-color: var(--trove-green);
-  color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background-color: #048a75;
-}
-
-.btn-secondary {
-  background-color: var(--bg-default);
-  color: var(--text-default);
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background-color: var(--border-color);
-}
-
-/* Input Styles */
-.input {
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  background-color: var(--bg-default);
-  color: var(--text-default);
-  font-size: 14px;
-  transition: all 0.2s ease;
-}
-
-.input:focus {
-  outline: none;
-  border-color: var(--trove-green);
-  background-color: var(--card-surface);
-}
-
-.input::placeholder {
-  color: var(--text-disabled);
-}
-
-.input-error {
-  border-color: var(--negative);
-}
-
-/* Pill/Tag Styles */
-.pill {
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: 1px solid var(--border-color);
-  background-color: var(--card-surface);
-  color: var(--text-neutral);
-}
-
-.pill:hover {
-  background-color: var(--bg-default);
-}
-
-.pill.active {
-  background-color: var(--trove-green);
-  color: white;
-  border-color: var(--trove-green);
-}
-
-/* Status Badges */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.badge-completed {
-  background-color: var(--trove-green-light);
-  color: var(--success);
-}
-
-.badge-pending {
-  background-color: #FFF4E0;
-  color: #F5A623;
-}
-
-.badge-failed {
-  background-color: #FEE2E2;
-  color: var(--negative);
-}
-
-/* Loading Spinner */
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+  body {
+    background-color: var(--color-bg-page);
+    color: var(--color-text-default);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.5;
+    min-height: 100vh;
   }
 }
 
-.spinner {
-  width: 20px;
-  height: 20px;
-  border: 2px solid transparent;
-  border-top-color: currentColor;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-/* Page Layout */
-.page-container {
-  min-height: 100vh;
-  background-color: var(--bg-page);
-}
-
-.dashboard-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: var(--spacing-lg);
-}
-
-/* Responsive Grid */
-.grid-dashboard {
-  display: grid;
-  gap: var(--spacing-lg);
-  grid-template-columns: 1fr;
-}
-
-@media (min-width: 768px) {
-  .grid-dashboard {
-    grid-template-columns: repeat(2, 1fr);
+/* Custom animations */
+@layer utilities {
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
-}
 
-@media (min-width: 1024px) {
-  .grid-dashboard {
-    grid-template-columns: repeat(3, 1fr);
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
-}
 
-/* Tab Styles */
-.tab-list {
-  display: flex;
-  gap: var(--spacing-sm);
-  border-bottom: 1px solid var(--border-color);
-  margin-bottom: var(--spacing-lg);
-}
+  .animate-spin {
+    animation: spin 0.8s linear infinite;
+  }
 
-.tab {
-  padding: 12px 20px;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-neutral);
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s ease;
-}
-
-.tab:hover {
-  color: var(--text-default);
-}
-
-.tab.active {
-  color: var(--trove-green);
-  border-bottom-color: var(--trove-green);
-}
-
-/* Allocation Bar */
-.allocation-bar {
-  display: flex;
-  height: 32px;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  background-color: var(--bg-default);
-}
-
-.allocation-segment {
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.allocation-segment:hover {
-  opacity: 0.9;
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
 }
 
 /* Scrollbar Styles */
@@ -348,39 +91,22 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-default);
-  border-radius: var(--radius-sm);
+  background: var(--color-bg-default);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: var(--radius-sm);
+  background: var(--color-border);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--text-disabled);
+  background: var(--color-text-disabled);
 }
 
 /* Focus States */
 button:focus-visible,
-input:focus-visible,
-.pill:focus-visible {
-  outline: 2px solid var(--trove-green);
+input:focus-visible {
+  outline: 2px solid var(--color-trove-green);
   outline-offset: 2px;
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.fade-in {
-  animation: fadeIn 0.3s ease-out;
 }

@@ -11,8 +11,8 @@ interface AccountListProps {
 export default function AccountList({ accounts, currency }: AccountListProps) {
   if (accounts.length === 0) {
     return (
-      <div className="card">
-        <p style={{ color: 'var(--text-neutral)', textAlign: 'center' }}>
+      <div className="bg-card-surface rounded-2xl border border-border p-6 shadow-sm">
+        <p className="text-text-neutral text-center">
           No account data available
         </p>
       </div>
@@ -20,68 +20,34 @@ export default function AccountList({ accounts, currency }: AccountListProps) {
   }
 
   return (
-    <div className="card">
+    <div className="bg-card-surface rounded-2xl border border-border p-6 shadow-sm">
       {/* Header */}
-      <div style={{ marginBottom: 'var(--spacing-lg)' }}>
-        <p style={{ 
-          fontSize: '12px', 
-          color: 'var(--text-neutral)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.5px',
-          fontWeight: 500,
-        }}>
+      <div className="mb-6">
+        <p className="text-xs font-medium text-text-neutral uppercase tracking-wide">
           Account Summary
         </p>
       </div>
 
-      {/* Account Cards Grid */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)' }}>
+      {/* Account Cards */}
+      <div className="flex flex-col gap-4">
         {accounts.map((account) => (
           <div
             key={account.category}
-            style={{
-              padding: 'var(--spacing-md)',
-              backgroundColor: 'var(--bg-default)',
-              borderRadius: 'var(--radius-lg)',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = 'none';
-            }}
+            className="p-4 bg-bg-default rounded-xl flex justify-between items-center transition-all hover:-translate-y-0.5 hover:shadow-md"
           >
             {/* Left: Category Name & Positions */}
             <div>
-              <h4 style={{ 
-                fontSize: '14px', 
-                fontWeight: 600,
-                color: 'var(--text-default)',
-                marginBottom: '2px',
-              }}>
+              <h4 className="text-sm font-semibold text-text-default mb-0.5">
                 {account.category}
               </h4>
-              <p style={{ 
-                fontSize: '12px', 
-                color: 'var(--text-neutral)',
-              }}>
+              <p className="text-xs text-text-neutral">
                 {account.positions} {account.positions === 1 ? 'position' : 'positions'}
               </p>
             </div>
 
             {/* Right: Total Value */}
-            <div style={{ textAlign: 'right' }}>
-              <p style={{ 
-                fontSize: '15px', 
-                fontWeight: 600,
-                color: 'var(--text-default)',
-              }}>
+            <div className="text-right">
+              <p className="text-base font-semibold text-text-default">
                 {formatCurrency(account.totalValue, currency)}
               </p>
             </div>
@@ -90,24 +56,11 @@ export default function AccountList({ accounts, currency }: AccountListProps) {
       </div>
 
       {/* Summary Footer */}
-      <div 
-        style={{
-          marginTop: 'var(--spacing-lg)',
-          paddingTop: 'var(--spacing-md)',
-          borderTop: '1px solid var(--border-color)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <span style={{ fontSize: '13px', color: 'var(--text-neutral)' }}>
+      <div className="mt-6 pt-4 border-t border-border flex justify-between items-center">
+        <span className="text-sm text-text-neutral">
           Total Categories
         </span>
-        <span style={{ 
-          fontSize: '14px', 
-          fontWeight: 600,
-          color: 'var(--text-default)',
-        }}>
+        <span className="text-sm font-semibold text-text-default">
           {accounts.length}
         </span>
       </div>

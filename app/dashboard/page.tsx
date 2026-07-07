@@ -40,69 +40,45 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div 
-        style={{
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: 'var(--bg-page)',
-          gap: 'var(--spacing-md)',
-        }}
-      >
-        <div 
-          className="spinner"
-          style={{ 
-            width: '40px', 
-            height: '40px',
-            borderWidth: '3px',
-            color: 'var(--trove-green)',
-          }} 
-        />
-        <p style={{ color: 'var(--text-neutral)' }}>Loading your portfolio...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-bg-page gap-4">
+        <div className="w-10 h-10 border-2 border-transparent border-t-trove-green rounded-full animate-spin" />
+        <p className="text-text-neutral">Loading your portfolio...</p>
       </div>
     );
   }
 
   if (error || !portfolioData) {
     return (
-      <div 
-        style={{
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: 'var(--bg-page)',
-          padding: 'var(--spacing-lg)',
-        }}
-      >
-        <div className="card" style={{ maxWidth: '400px', textAlign: 'center' }}>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-bg-page p-6">
+        <div className="bg-card-surface rounded-2xl border border-border p-6 max-w-md w-full text-center shadow-sm">
           <svg
-            width="48"
-            height="48"
+            className="w-12 h-12 mx-auto mb-4 text-negative"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="var(--negative)"
+            stroke="currentColor"
             strokeWidth="1.5"
-            style={{ margin: '0 auto var(--spacing-md)' }}
           >
             <circle cx="12" cy="12" r="10" />
             <line x1="12" y1="8" x2="12" y2="12" />
             <line x1="12" y1="16" x2="12.01" y2="16" />
           </svg>
-          <h3 style={{ marginBottom: 'var(--spacing-sm)', color: 'var(--text-default)' }}>
+          <h3 className="text-lg font-semibold mb-2 text-text-default">
             Error Loading Data
           </h3>
-          <p style={{ color: 'var(--text-neutral)', marginBottom: 'var(--spacing-lg)' }}>
+          <p className="text-text-neutral mb-6">
             {error || 'Something went wrong'}
           </p>
-          <div style={{ display: 'flex', gap: 'var(--spacing-md)', justifyContent: 'center' }}>
-            <button onClick={loadPortfolioData} className="btn btn-primary">
+          <div className="flex gap-4 justify-center">
+            <button 
+              onClick={loadPortfolioData} 
+              className="px-6 py-3 bg-trove-green text-white rounded-xl font-medium hover:bg-trove-green/90 transition-colors"
+            >
               Try Again
             </button>
-            <button onClick={logout} className="btn btn-secondary">
+            <button 
+              onClick={logout} 
+              className="px-6 py-3 bg-bg-default text-text-default rounded-xl font-medium hover:bg-border transition-colors"
+            >
               Logout
             </button>
           </div>
@@ -115,46 +91,18 @@ export default function DashboardPage() {
   const accountSummaries = getAccountSummaries(portfolioData.holdings);
 
   return (
-    <div className="page-container">
+    <div className="min-h-screen bg-bg-page">
       {/* Header */}
-      <header 
-        style={{
-          backgroundColor: 'var(--card-surface)',
-          borderBottom: '1px solid var(--border-color)',
-          padding: 'var(--spacing-md) var(--spacing-lg)',
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-        }}
-      >
-        <div 
-          style={{
-            maxWidth: '1200px',
-            margin: '0 auto',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
+      <header className="bg-card-surface border-b border-border px-4 lg:px-6 py-4 sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto flex justify-between items-center">
           {/* Logo */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
-            <div 
-              style={{
-                width: '36px',
-                height: '36px',
-                backgroundColor: 'var(--trove-green)',
-                borderRadius: 'var(--radius-md)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
+          <div className="flex items-center gap-2">
+            <div className="w-9 h-9 bg-trove-green rounded-xl flex items-center justify-center">
               <svg 
-                width="20" 
-                height="20" 
+                className="w-5 h-5 text-white"
                 viewBox="0 0 24 24" 
                 fill="none" 
-                stroke="white" 
+                stroke="currentColor" 
                 strokeWidth="2.5"
               >
                 <path d="M3 3v18h18"/>
@@ -163,49 +111,22 @@ export default function DashboardPage() {
                 <path d="M8 17v-3"/>
               </svg>
             </div>
-            <span style={{ 
-              fontSize: '18px', 
-              fontWeight: 700, 
-              color: 'var(--text-default)',
-            }}>
+            <span className="text-lg font-bold text-text-default">
               Trove
             </span>
           </div>
 
           {/* User & Logout */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
-            <span style={{ 
-              fontSize: '14px', 
-              color: 'var(--text-neutral)',
-              display: 'none',
-            }} className="hide-mobile">
+          <div className="flex items-center gap-4">
+            <span className="hidden md:block text-sm text-text-neutral">
               {user?.email}
             </span>
             <button 
               onClick={logout}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'var(--text-neutral)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '8px',
-                borderRadius: 'var(--radius-md)',
-                transition: 'all 0.2s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--bg-default)';
-                e.currentTarget.style.color = 'var(--text-default)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.color = 'var(--text-neutral)';
-              }}
+              className="p-2 text-text-neutral hover:text-text-default hover:bg-bg-default rounded-xl transition-all"
               title="Logout"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
                 <polyline points="16 17 21 12 16 7" />
                 <line x1="21" y1="12" x2="9" y2="12" />
@@ -216,16 +137,9 @@ export default function DashboardPage() {
       </header>
 
       {/* Main Content */}
-      <main className="dashboard-container">
+      <main className="max-w-6xl mx-auto p-4 lg:p-6">
         {/* Top Section: Net Worth & Allocation */}
-        <div 
-          style={{
-            display: 'grid',
-            gap: 'var(--spacing-lg)',
-            marginBottom: 'var(--spacing-xl)',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-          }}
-        >
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <NetWorthCard 
             summary={portfolioData.summary} 
             userName={portfolioData.user.name}
@@ -238,20 +152,11 @@ export default function DashboardPage() {
         </div>
 
         {/* Account Summary */}
-        <div style={{ marginBottom: 'var(--spacing-xl)' }}>
-          <h2 style={{ 
-            fontSize: '18px', 
-            fontWeight: 600,
-            marginBottom: 'var(--spacing-md)',
-            color: 'var(--text-default)',
-          }}>
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold mb-4 text-text-default">
             Account Breakdown
           </h2>
-          <div style={{
-            display: 'grid',
-            gap: 'var(--spacing-lg)',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-          }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <AccountList 
               accounts={accountSummaries}
               currency={portfolioData.summary.currency}
@@ -260,18 +165,26 @@ export default function DashboardPage() {
         </div>
 
         {/* Holdings & Transactions Tabs */}
-        <div className="card" style={{ marginBottom: 'var(--spacing-xl)' }}>
+        <div className="bg-card-surface rounded-2xl border border-border p-6 mb-8 shadow-sm">
           {/* Tab Navigation */}
-          <div className="tab-list">
+          <div className="flex gap-1 border-b border-border mb-6">
             <button
               onClick={() => setActiveTab('stocks')}
-              className={`tab ${activeTab === 'stocks' ? 'active' : ''}`}
+              className={`px-5 py-3 text-sm font-medium transition-colors relative ${
+                activeTab === 'stocks' 
+                  ? 'text-trove-green border-b-2 border-trove-green' 
+                  : 'text-text-neutral hover:text-text-default'
+              }`}
             >
               Stocks
             </button>
             <button
               onClick={() => setActiveTab('orders')}
-              className={`tab ${activeTab === 'orders' ? 'active' : ''}`}
+              className={`px-5 py-3 text-sm font-medium transition-colors relative ${
+                activeTab === 'orders' 
+                  ? 'text-trove-green border-b-2 border-trove-green' 
+                  : 'text-text-neutral hover:text-text-default'
+              }`}
             >
               Orders
             </button>
@@ -294,8 +207,8 @@ export default function DashboardPage() {
         </div>
 
         {/* Footer */}
-        <footer style={{ textAlign: 'center', padding: 'var(--spacing-lg) 0' }}>
-          <p style={{ fontSize: '12px', color: 'var(--text-disabled)' }}>
+        <footer className="text-center py-6">
+          <p className="text-xs text-text-disabled">
             Last updated: {new Date(portfolioData.user.lastUpdated).toLocaleString()}
           </p>
         </footer>

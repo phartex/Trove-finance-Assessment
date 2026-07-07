@@ -16,16 +16,16 @@ export default function OrdersTab({ transactions, currency }: OrdersTabProps) {
     [transactions, filter]
   );
 
-  const getStatusBadgeClass = (status: string) => {
+  const getStatusStyles = (status: string) => {
     switch (status) {
       case 'COMPLETED':
-        return 'badge-completed';
+        return 'bg-trove-green-light text-success';
       case 'PENDING':
-        return 'badge-pending';
+        return 'bg-pending-bg text-pending-text';
       case 'FAILED':
-        return 'badge-failed';
+        return 'bg-red-100 text-negative';
       default:
-        return 'badge-completed';
+        return 'bg-trove-green-light text-success';
     }
   };
 
@@ -33,20 +33,20 @@ export default function OrdersTab({ transactions, currency }: OrdersTabProps) {
     switch (status) {
       case 'COMPLETED':
         return (
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+          <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
             <polyline points="20 6 9 17 4 12" />
           </svg>
         );
       case 'PENDING':
         return (
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="12" cy="12" r="10" />
             <polyline points="12 6 12 12 16 14" />
           </svg>
         );
       case 'FAILED':
         return (
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="12" cy="12" r="10" />
             <line x1="15" y1="9" x2="9" y2="15" />
             <line x1="9" y1="9" x2="15" y2="15" />
@@ -57,19 +57,32 @@ export default function OrdersTab({ transactions, currency }: OrdersTabProps) {
     }
   };
 
+  const getBorderColor = (status: string) => {
+    switch (status) {
+      case 'COMPLETED':
+        return 'border-l-success';
+      case 'PENDING':
+        return 'border-l-pending-text';
+      case 'FAILED':
+        return 'border-l-negative';
+      default:
+        return 'border-l-success';
+    }
+  };
+
   return (
     <div>
       {/* Filter Pills */}
-      <div style={{ 
-        display: 'flex', 
-        gap: 'var(--spacing-sm)', 
-        marginBottom: 'var(--spacing-lg)',
-      }}>
+      <div className="flex gap-2 mb-6">
         {(['ALL', 'BUY', 'SELL'] as const).map((type) => (
           <button
             key={type}
             onClick={() => setFilter(type)}
-            className={`pill ${filter === type ? 'active' : ''}`}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
+              filter === type
+                ? 'bg-trove-green text-white border-trove-green'
+                : 'bg-card-surface text-text-neutral border-border hover:bg-bg-default'
+            }`}
           >
             {type === 'ALL' ? 'All Orders' : type}
           </button>
@@ -77,23 +90,15 @@ export default function OrdersTab({ transactions, currency }: OrdersTabProps) {
       </div>
 
       {/* Transactions List */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)' }}>
+      <div className="flex flex-col gap-4">
         {filteredTransactions.length === 0 ? (
-          <div 
-            style={{
-              padding: 'var(--spacing-2xl)',
-              textAlign: 'center',
-              color: 'var(--text-neutral)',
-            }}
-          >
+          <div className="py-12 text-center text-text-neutral">
             <svg
-              width="48"
-              height="48"
+              className="w-12 h-12 mx-auto mb-4 opacity-50"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="1.5"
-              style={{ margin: '0 auto var(--spacing-md)', opacity: 0.5 }}
             >
               <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
               <line x1="16" y1="2" x2="16" y2="6" />
@@ -101,9 +106,7 @@ export default function OrdersTab({ transactions, currency }: OrdersTabProps) {
               <line x1="3" y1="10" x2="21" y2="10" />
             </svg>
             <p>No transactions found</p>
-            <p style={{ fontSize: '13px', marginTop: 'var(--spacing-xs)' }}>
-              Try adjusting your filter
-            </p>
+            <p className="text-sm mt-1">Try adjusting your filter</p>
           </div>
         ) : (
           filteredTransactions.map((transaction) => {
@@ -112,78 +115,44 @@ export default function OrdersTab({ transactions, currency }: OrdersTabProps) {
             return (
               <div
                 key={transaction.id}
-                className="card"
-                style={{
-                  padding: 'var(--spacing-md)',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'flex-start',
-                  borderLeft: `4px solid ${
-                    transaction.status === 'COMPLETED' 
-                      ? 'var(--success)' 
-                      : transaction.status === 'PENDING'
-                      ? '#F5A623'
-                      : 'var(--negative)'
-                  }`,
-                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
-                }}
+                className={`bg-card-surface border border-border rounded-xl p-4 flex justify-between items-start transition-all hover:-translate-y-0.5 hover:shadow-md border-l-4 ${getBorderColor(transaction.status)}`}
               >
                 {/* Left: Transaction Info */}
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)', marginBottom: '6px' }}>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1.5">
                     <span 
-                      style={{
-                        fontSize: '13px',
-                        fontWeight: 700,
-                        padding: '2px 8px',
-                        borderRadius: '4px',
-                        backgroundColor: isBuy ? 'var(--trove-green-light)' : '#FEE2E2',
-                        color: isBuy ? 'var(--success)' : 'var(--negative)',
-                      }}
+                      className={`text-xs font-bold px-2 py-0.5 rounded ${
+                        isBuy 
+                          ? 'bg-trove-green-light text-success' 
+                          : 'bg-red-100 text-negative'
+                      }`}
                     >
                       {isBuy ? 'BUY' : 'SELL'}
                     </span>
-                    <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-default)' }}>
+                    <span className="text-base font-semibold text-text-default">
                       {transaction.ticker}
                     </span>
-                    <span className={`badge ${getStatusBadgeClass(transaction.status)}`}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        {getStatusIcon(transaction.status)}
-                        {transaction.status}
-                      </span>
+                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${getStatusStyles(transaction.status)}`}>
+                      {getStatusIcon(transaction.status)}
+                      {transaction.status}
                     </span>
                   </div>
                   
-                  <p style={{ fontSize: '13px', color: 'var(--text-neutral)', marginBottom: '4px' }}>
+                  <p className="text-sm text-text-neutral mb-1">
                     {transaction.name}
                   </p>
                   
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)', marginTop: '8px' }}>
-                    <span style={{ fontSize: '12px', color: 'var(--text-disabled)' }}>
-                      {transaction.shares} {transaction.shares === 1 ? 'share' : 'shares'} @ {formatCurrency(transaction.pricePerShare, currency)}
-                    </span>
-                  </div>
+                  <p className="text-xs text-text-disabled mt-2">
+                    {transaction.shares} {transaction.shares === 1 ? 'share' : 'shares'} @ {formatCurrency(transaction.pricePerShare, currency)}
+                  </p>
                 </div>
 
                 {/* Right: Amount & Date */}
-                <div style={{ textAlign: 'right' }}>
-                  <p style={{ 
-                    fontSize: '15px', 
-                    fontWeight: 600,
-                    color: isBuy ? 'var(--negative)' : 'var(--success)',
-                    marginBottom: '4px',
-                  }}>
+                <div className="text-right">
+                  <p className={`text-base font-semibold mb-1 ${isBuy ? 'text-negative' : 'text-success'}`}>
                     {isBuy ? '-' : '+'}{formatCurrency(transaction.totalAmount, currency)}
                   </p>
-                  <p style={{ fontSize: '12px', color: 'var(--text-disabled)' }}>
+                  <p className="text-xs text-text-disabled">
                     {formatDate(transaction.date)}
                   </p>
                 </div>
@@ -195,12 +164,7 @@ export default function OrdersTab({ transactions, currency }: OrdersTabProps) {
 
       {/* Results Count */}
       {filteredTransactions.length > 0 && (
-        <p style={{ 
-          fontSize: '12px', 
-          color: 'var(--text-neutral)',
-          marginTop: 'var(--spacing-md)',
-          textAlign: 'center',
-        }}>
+        <p className="text-xs text-text-neutral mt-4 text-center">
           Showing {filteredTransactions.length} of {transactions.length} transactions
         </p>
       )}

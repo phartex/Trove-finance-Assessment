@@ -12,8 +12,8 @@ interface AllocationBarProps {
 export default function AllocationBar({ allocations, totalValue, currency }: AllocationBarProps) {
   if (allocations.length === 0) {
     return (
-      <div className="card">
-        <p style={{ color: 'var(--text-neutral)', textAlign: 'center' }}>
+      <div className="bg-card-surface rounded-2xl border border-border p-6 shadow-sm">
+        <p className="text-text-neutral text-center">
           No allocation data available
         </p>
       </div>
@@ -21,30 +21,23 @@ export default function AllocationBar({ allocations, totalValue, currency }: All
   }
 
   return (
-    <div className="card">
+    <div className="bg-card-surface rounded-2xl border border-border p-6 shadow-sm">
       {/* Header */}
-      <div style={{ marginBottom: 'var(--spacing-lg)' }}>
-        <p style={{ 
-          fontSize: '12px', 
-          color: 'var(--text-neutral)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.5px',
-          fontWeight: 500,
-        }}>
+      <div className="mb-6">
+        <p className="text-xs font-medium text-text-neutral uppercase tracking-wide">
           Allocation by Sector
         </p>
       </div>
 
       {/* Stacked Bar */}
-      <div className="allocation-bar" style={{ marginBottom: 'var(--spacing-lg)' }}>
-        {allocations.map((allocation, index) => (
+      <div className="flex h-8 rounded-xl overflow-hidden bg-bg-default mb-6">
+        {allocations.map((allocation) => (
           <div
             key={allocation.sector}
-            className="allocation-segment"
+            className="transition-opacity hover:opacity-90 relative min-w-[4px]"
             style={{
               width: `${allocation.percentage}%`,
               backgroundColor: allocation.color,
-              minWidth: allocation.percentage > 0 ? '4px' : '0',
             }}
             title={`${allocation.sector}: ${allocation.percentage.toFixed(1)}%`}
           />
@@ -52,37 +45,25 @@ export default function AllocationBar({ allocations, totalValue, currency }: All
       </div>
 
       {/* Legend */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-md)' }}>
+      <div className="flex flex-wrap gap-4">
         {allocations.map((allocation) => (
           <div 
             key={allocation.sector}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 'var(--spacing-sm)',
-            }}
+            className="flex items-center gap-2"
           >
             <div 
-              style={{
-                width: '12px',
-                height: '12px',
-                borderRadius: '3px',
-                backgroundColor: allocation.color,
-              }}
+              className="w-3 h-3 rounded"
+              style={{ backgroundColor: allocation.color }}
             />
             <div>
-              <span style={{ 
-                fontSize: '13px', 
-                fontWeight: 500,
-                color: 'var(--text-default)',
-              }}>
+              <span className="text-sm font-medium text-text-default">
                 {allocation.sector}
               </span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ fontSize: '12px', color: 'var(--text-neutral)' }}>
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs text-text-neutral">
                   {allocation.percentage.toFixed(1)}%
                 </span>
-                <span style={{ fontSize: '11px', color: 'var(--text-disabled)' }}>
+                <span className="text-xs text-text-disabled">
                   ({formatCurrency(allocation.value, currency)})
                 </span>
               </div>
@@ -92,24 +73,11 @@ export default function AllocationBar({ allocations, totalValue, currency }: All
       </div>
 
       {/* Total */}
-      <div 
-        style={{
-          marginTop: 'var(--spacing-lg)',
-          paddingTop: 'var(--spacing-md)',
-          borderTop: '1px solid var(--border-color)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <span style={{ fontSize: '13px', color: 'var(--text-neutral)' }}>
+      <div className="mt-6 pt-4 border-t border-border flex justify-between items-center">
+        <span className="text-sm text-text-neutral">
           Total Portfolio Value
         </span>
-        <span style={{ 
-          fontSize: '16px', 
-          fontWeight: 600,
-          color: 'var(--text-default)',
-        }}>
+        <span className="text-base font-semibold text-text-default">
           {formatCurrency(totalValue, currency)}
         </span>
       </div>
