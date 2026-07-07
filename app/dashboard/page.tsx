@@ -30,7 +30,6 @@ export default function DashboardPage() {
       setError(null);
       const data = await fetchPortfolioData();
       setPortfolioData(data);
-      console.log('Fetched Portfolio Data:', data); // Debugging log
     } catch (err) {
       setError('Failed to load portfolio data. Please try again.');
     } finally {
@@ -71,10 +70,12 @@ export default function DashboardPage() {
     );
   }
 
-  const sectorAllocations = calculateSectorAllocation(portfolioData.holdings);
-  const accountSummaries = getAccountSummaries(portfolioData.holdings);
+  // Filter out DIS (0 shares) so it won't impact our live summary arrays or dynamic visual charts
+  const validHoldings = portfolioData.holdings.filter(h => h.shares > 0);
 
-  // Fallback defaults for the standalone specific account types if missing in standard keys
+  const sectorAllocations = calculateSectorAllocation(validHoldings);
+  const accountSummaries = getAccountSummaries(validHoldings);
+
   const accountCards = [
     { label: 'US Portfolio', value: 32140.00, change: '+ 2.4%', isUp: true, prefix: '$' },
     { label: 'NG Portfolio', value: 4250000, change: '▼ 1.2%', isUp: false, prefix: '₦' },
@@ -84,16 +85,11 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-bg-page flex overflow-hidden">
-      {/* Left Sidebar Pane */}
       <Sidebar userName={portfolioData.user.name} />
 
-      {/* Right Canvas Area */}
       <div className="flex-1 h-screen flex flex-col overflow-y-auto bg-[#F2F6F6]">
-
-        {/* Header Bar */}
         <Header />
 
-        {/* Scrollable Content Container */}
         <main className="w-full mx-auto px-6 py-8 lg:px-10 flex-1 flex flex-col gap-8">
 
           {/* 1. Top Section: Net Worth & Allocation Grid */}
@@ -113,10 +109,10 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* 2. Middle Sub-portfolio Balance Cards (US, NG, Fixed, GEMS) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {/* 2. Middle Sub-portfolio Balance Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 ">
             {accountCards.map((card) => (
-              <div key={card.label} className="bg-white p-5 rounded-2xl border border-slate-100 flex flex-col justify-between shadow-sm min-h-[120px]">
+              <div key={card.label} className="bg-white p-5 rounded-2xl border-2 border-[#DBDFDF] flex flex-col justify-between shadow-sm min-h-[120px]">
                 <span className="text-xs font-bold text-slate-400 tracking-tight uppercase">{card.label}</span>
                 <span className="text-xl font-bold text-slate-800 mt-2">
                   {card.prefix}{card.value.toLocaleString(undefined, { minimumFractionDigits: 2 })}
@@ -132,116 +128,119 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
 
             {/* Holdings Column Left */}
-            {/* 3. Bottom Section: Side-by-Side Dual Ledger Track (Holdings & Transactions) */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-
-              {/* Holdings Column Left */}
-              <div className="flex flex-col">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-[17px] font-bold text-slate-900 tracking-tight">Holdings</h3>
-                  <button className="text-xs font-bold text-[#00664F] hover:underline">View All</button>
-                </div>
-
-                <div className="flex flex-col gap-3">
-                  {portfolioData.holdings.slice(0, 5).map((holding) => {
-                    const assetTicker = holding.ticker || "STOCK";
-                    const assetName = holding.name || "";
-                    const sharesCount = holding.shares ?? 0;
-                    const currentVal = holding.currentValue ?? 0;
-                    const profitAmt = holding.gainLoss ?? 0;
-                    const profitPct = holding.gainLossPercent ?? 0;
-
-                    return (
-                      <div key={holding.id || assetTicker} className="bg-white border border-slate-100 rounded-2xl p-4 flex items-center justify-between shadow-sm">
-                        <div className="flex items-center gap-3">
-                          {/* Display first 3 letters of Ticker cleanly */}
-                          <div className="w-11 h-11 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center font-bold text-slate-500 text-sm">
-                            {assetTicker.substring(0, 3)}
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="text-sm font-bold text-slate-800">{assetTicker}</span>
-                            <span className="text-xs text-slate-400 font-medium">{assetName}</span>
-                          </div>
-                        </div>
-
-                        <div className="text-center hidden sm:block">
-                          <span className="text-xs text-slate-400 font-semibold block">Shares</span>
-                          <span className="text-sm font-bold text-slate-800">{sharesCount.toFixed(2)}</span>
-                        </div>
-
-                        <div className="text-right">
-                          <span className="text-sm font-bold text-slate-800 block">
-                            {holding.priceUnavailable
-                              ? 'Price unavailable'
-                              : formatCurrency(currentVal, portfolioData.summary.currency)
-                            }
-                          </span>
-                          {!holding.priceUnavailable && (
-                            <span className={`text-xs font-bold ${profitAmt >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                              {profitAmt >= 0 ? '+' : ''}{formatCurrency(profitAmt, portfolioData.summary.currency)} ({profitPct >= 0 ? '+' : ''}{profitPct.toFixed(1)}%)
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+            <div className="flex flex-col">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-[17px] font-bold text-slate-900 tracking-tight">Holdings</h3>
+                <button className="text-xs font-bold text-[#00664F] hover:underline">View All</button>
               </div>
 
-              {/* Recent Transactions Column Right */}
-              <div className="flex flex-col">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-[17px] font-bold text-slate-900 tracking-tight">Recent Transactions</h3>
-                  <button className="text-xs font-bold text-[#00664F] hover:underline">View All</button>
-                </div>
+              <div className="flex flex-col gap-3">
+                {validHoldings.slice(0, 5).map((holding) => {
+                  const assetTicker = holding.ticker || "STOCK";
+                  const assetName = holding.name || "";
+                  const sharesCount = holding.shares ?? 0;
+                  
+                  // Intentional Quirk 1: If currentPrice is 0, price is missing/unavailable
+                  const isPriceMissing = holding.currentPrice === 0;
+                  const currentVal = isPriceMissing ? 0 : (holding.currentValue ?? (sharesCount * (holding.currentPrice ?? 0)));
+                  
+                  // Intentional Quirk 5: Calculate Gain/Loss dynamically if not explicitly provided
+                  const totalCost = sharesCount * (holding.avgCost ?? 0);
+                  const profitAmt = isPriceMissing ? 0 : (currentVal - totalCost);
+                  const profitPct = totalCost > 0 ? (profitAmt / totalCost) * 100 : 0;
+                  const isPositive = profitAmt >= 0;
 
-                <div className="flex flex-col gap-3">
-                  {portfolioData.transactions?.slice(0, 5).map((tx) => {
-                    const txType = tx.type || "BUY";
-                    const nameOfAsset = tx.name || tx.ticker || "Asset Stock";
-                    const txShares = tx.shares || 0;
-                    const txAmount = tx.totalAmount ?? 0;
-                    const isBuy = txType.toUpperCase() === 'BUY';
-
-                    // Parse date payload format string beautifully (e.g., "2025-07-01T10:15:00Z" -> "Jul 1, 2025")
-                    const formattedTxDate = tx.date
-                      ? new Date(tx.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                      : 'Oct 24, 2023';
-
-                    return (
-                      <div key={tx.id} className="bg-white border border-slate-100 rounded-2xl p-4 flex items-center justify-between shadow-sm">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-11 h-11 rounded-full flex items-center justify-center font-bold text-lg ${isBuy ? 'bg-[#EBF5F2] text-[#00664F]' : 'bg-slate-100 text-slate-600'
-                            }`}>
-                            {isBuy ? '+' : '−'}
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="text-sm font-bold text-slate-800">
-                              {txType.charAt(0) + txType.slice(1).toLowerCase()} {nameOfAsset}
-                            </span>
-                            <span className="text-xs text-slate-400 font-medium">
-                              {formattedTxDate} • {txShares} Shares
-                            </span>
-                          </div>
+                  return (
+                    <div key={holding.id || assetTicker} className="bg-white border border-slate-100 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+                      <div className="flex items-center gap-3">
+                        <div className="w-11 h-11 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center font-bold text-slate-500 text-sm">
+                          {assetTicker.substring(0, 3)}
                         </div>
+                        <div className="flex flex-col">
+                          <span className="text-sm font-bold text-slate-800">{assetTicker}</span>
+                          <span className="text-xs text-slate-400 font-medium">{assetName}</span>
+                        </div>
+                      </div>
 
-                        <div className="text-right flex flex-col items-end gap-1">
+                      <div className="text-center hidden sm:block">
+                        <span className="text-xs text-slate-400 font-semibold block">Shares</span>
+                        <span className="text-sm font-bold text-slate-800">{sharesCount.toFixed(2)}</span>
+                      </div>
+
+                      <div className="text-right">
+                        <span className="text-sm font-bold text-slate-800 block">
+                          {isPriceMissing 
+                            ? 'Price unavailable' 
+                            : formatCurrency(currentVal, portfolioData.summary.currency)
+                          }
+                        </span>
+                        {!isPriceMissing && (
+                          <span className={`text-xs font-bold ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
+                            {isPositive ? '+' : ''}{formatCurrency(profitAmt, portfolioData.summary.currency)} ({isPositive ? '+' : ''}{profitPct.toFixed(1)}%)
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Recent Transactions Column Right */}
+            <div className="flex flex-col">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-[17px] font-bold text-slate-900 tracking-tight">Recent Transactions</h3>
+                <button className="text-xs font-bold text-[#00664F] hover:underline">View All</button>
+              </div>
+
+              <div className="flex flex-col gap-3">
+                {portfolioData.transactions?.slice(0, 5).map((tx) => {
+                  const txType = tx.type || "BUY";
+                  const nameOfAsset = tx.name || tx.ticker || "Asset Stock";
+                  const txShares = tx.shares || 0;
+                  const txAmount = tx.totalAmount ?? 0;
+                  const isBuy = txType.toUpperCase() === 'BUY';
+
+                  const formattedTxDate = tx.date
+                    ? new Date(tx.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                    : 'Oct 24, 2023';
+
+                  return (
+                    <div key={tx.id} className="bg-white border border-slate-100 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-11 h-11 rounded-full flex items-center justify-center font-bold text-lg ${
+                          isBuy ? 'bg-[#EBF5F2] text-[#00664F]' : 'bg-slate-100 text-slate-600'
+                        }`}>
+                          {isBuy ? '+' : '−'}
+                        </div>
+                        <div className="flex flex-col">
                           <span className="text-sm font-bold text-slate-800">
-                            {isBuy ? '-' : '+'}{formatCurrency(txAmount, portfolioData.summary.currency)}
+                            {txType.charAt(0) + txType.slice(1).toLowerCase()} {nameOfAsset}
                           </span>
-                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${tx.status === 'COMPLETED' ? 'bg-green-50 text-green-600 border-green-100' :
-                            tx.status === 'PENDING' ? 'bg-amber-50 text-amber-600 border-amber-100' :
-                              'bg-red-50 text-red-600 border-red-100'
-                            }`}>
-                            {tx.status}
+                          <span className="text-xs text-slate-400 font-medium">
+                            {formattedTxDate} • {txShares} Shares
                           </span>
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
-              </div>
 
+                      <div className="text-right flex flex-col items-end gap-1">
+                        <span className="text-sm font-bold text-slate-800">
+                          {isBuy ? '-' : '+'}{formatCurrency(txAmount, portfolioData.summary.currency)}
+                        </span>
+                        
+                        {/* Intentional Quirks 3 & 4: Distinct color mappings for PENDING and FAILED statuses */}
+                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
+                          tx.status === 'COMPLETED' ? 'bg-green-50 text-green-600 border-green-100' :
+                          tx.status === 'PENDING' ? 'bg-amber-50 text-amber-600 border-amber-100 animate-pulse' :
+                          'bg-red-50 text-red-600 border-red-100 line-through opacity-70'
+                        }`}>
+                          {tx.status}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
           </div>
