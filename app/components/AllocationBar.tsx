@@ -12,75 +12,79 @@ interface AllocationBarProps {
 export default function AllocationBar({ allocations, totalValue, currency }: AllocationBarProps) {
   if (allocations.length === 0) {
     return (
-      <div className="bg-card-surface rounded-2xl border border-border p-6 shadow-sm">
-        <p className="text-text-neutral text-center">
+      <div className="bg-white rounded-2xl border border-slate-100 p-6 h-[300px] flex items-center justify-center">
+        <p className="text-slate-400 text-sm text-center">
           No allocation data available
         </p>
       </div>
     );
   }
 
+  // Pre-mapping colors to guarantee exact hex-matches with the mockup visuals
+  const brandColors: Record<string, string> = {
+    Technology: '#00664F',  // Primary Deep Green
+    Automotive: '#22C55E',  // Light Green Accent
+    Healthcare: '#A7F3D0',  // Muted Soft Green
+    Finance: '#6366F1',     // Indigo Accent
+  };
+
   return (
-    <div className="bg-card-surface rounded-2xl border border-border p-6 shadow-sm">
-      {/* Header */}
-      <div className="mb-6">
-        <p className="text-xs font-medium text-text-neutral uppercase tracking-wide">
-          Allocation by Sector
-        </p>
-      </div>
+    <div className="bg-white rounded-2xl border-2 border-slate-200 p-6 flex flex-col justify-between h-[300px]">
+      
+      {/* Title */}
+      <div>
+        <h3 className="text-[17px] font-bold text-slate-900 tracking-tight mb-5">
+          Asset Allocation
+        </h3>
 
-      {/* Stacked Bar */}
-      <div className="flex h-8 rounded-xl overflow-hidden bg-bg-default mb-6">
-        {allocations.map((allocation) => (
-          <div
-            key={allocation.sector}
-            className="transition-opacity hover:opacity-90 relative min-w-[4px]"
-            style={{
-              width: `${allocation.percentage}%`,
-              backgroundColor: allocation.color,
-            }}
-            title={`${allocation.sector}: ${allocation.percentage.toFixed(1)}%`}
-          />
-        ))}
-      </div>
+        {/* Stacked Percentage Progress Bar Track */}
+        <div className="flex h-5 rounded-full overflow-hidden bg-slate-100 mb-6 w-full">
+          {allocations.map((allocation) => {
+            const barColor = brandColors[allocation.sector] || allocation.color;
+            return (
+              <div
+                key={allocation.sector}
+                className="transition-all hover:opacity-95 relative first:rounded-l-full last:rounded-r-full"
+                style={{
+                  width: `${allocation.percentage}%`,
+                  backgroundColor: barColor,
+                }}
+                title={`${allocation.sector}: ${allocation.percentage.toFixed(0)}%`}
+              />
+            );
+          })}
+        </div>
 
-      {/* Legend */}
-      <div className="flex flex-wrap gap-4">
-        {allocations.map((allocation) => (
-          <div 
-            key={allocation.sector}
-            className="flex items-center gap-2"
-          >
-            <div 
-              className="w-3 h-3 rounded"
-              style={{ backgroundColor: allocation.color }}
-            />
-            <div>
-              <span className="text-sm font-medium text-text-default">
-                {allocation.sector}
-              </span>
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs text-text-neutral">
-                  {allocation.percentage.toFixed(1)}%
-                </span>
-                <span className="text-xs text-text-disabled">
-                  ({formatCurrency(allocation.value, currency)})
-                </span>
+        {/* Legend Panel arranged into a structured 2-Column Grid matching the mockup */}
+        <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+          {allocations.map((allocation) => {
+            const dotColor = brandColors[allocation.sector] || allocation.color;
+            return (
+              <div key={allocation.sector} className="flex items-start gap-2.5">
+                {/* Colored Marker Dot */}
+                <span 
+                  className="w-2.5 h-2.5 rounded-full mt-1.5 shrink-0" 
+                  style={{ backgroundColor: dotColor }}
+                />
+                
+                <div className="flex flex-col">
+                  <span className="text-xs font-semibold text-slate-400 leading-tight">
+                    {allocation.sector}
+                  </span>
+                  <span className="text-base font-bold text-slate-800 tracking-tight mt-0.5">
+                    {allocation.percentage.toFixed(0)}%
+                  </span>
+                </div>
               </div>
-            </div>
-          </div>
-        ))}
+            );
+          })}
+        </div>
       </div>
 
-      {/* Total */}
-      <div className="mt-6 pt-4 border-t border-border flex justify-between items-center">
-        <span className="text-sm text-text-neutral">
-          Total Portfolio Value
-        </span>
-        <span className="text-base font-semibold text-text-default">
-          {formatCurrency(totalValue, currency)}
-        </span>
-      </div>
+      {/* Optional Clean Bottom Border Context Value for total assurance if needed */}
+      <span className="sr-only">
+        Total Portfolio Value: {formatCurrency(totalValue, currency)}
+      </span>
     </div>
   );
 }
