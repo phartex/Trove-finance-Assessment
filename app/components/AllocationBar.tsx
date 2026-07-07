@@ -12,8 +12,8 @@ interface AllocationBarProps {
 export default function AllocationBar({ allocations, totalValue, currency }: AllocationBarProps) {
   if (allocations.length === 0) {
     return (
-      <div className="bg-white rounded-2xl border border-slate-100 p-6 h-[300px] flex items-center justify-center">
-        <p className="text-slate-400 text-sm text-center">
+      <div className="bg-white rounded-2xl border border-border p-6 h-[300px] flex items-center justify-center">
+        <p className="text-text-neutral text-sm text-center">
           No allocation data available
         </p>
       </div>
@@ -22,18 +22,18 @@ export default function AllocationBar({ allocations, totalValue, currency }: All
 
   // Pre-mapping colors to guarantee exact hex-matches with the mockup visuals
   const brandColors: Record<string, string> = {
-    Technology: '#00664F',  // Primary Deep Green
-    Automotive: '#22C55E',  // Light Green Accent
-    Healthcare: '#A7F3D0',  // Muted Soft Green
-    Finance: '#6366F1',     // Indigo Accent
+    Technology: '#059A83',  
+    Automotive: '#00B6DF',  
+    Healthcare: '#E0F5E1',
+    Finance: '#7B79C9',
   };
 
   return (
-    <div className="bg-white rounded-2xl border-2 border-slate-200 p-6 flex flex-col justify-between h-[300px]">
+    <div className="bg-white rounded-2xl border-2 border-border p-6 flex flex-col justify-between h-[300px]">
       
       {/* Title */}
       <div>
-        <h3 className="text-[17px] font-bold text-slate-900 tracking-tight mb-5">
+        <h3 className="text-[14px] font-bold text-text-default tracking-tight mb-5">
           Asset Allocation
         </h3>
 
@@ -68,10 +68,10 @@ export default function AllocationBar({ allocations, totalValue, currency }: All
                 />
                 
                 <div className="flex flex-col">
-                  <span className="text-xs font-semibold text-slate-400 leading-tight">
+                  <span className="text-[14px] font-semibold text-text-neutral leading-tight">
                     {allocation.sector}
                   </span>
-                  <span className="text-base font-bold text-slate-800 tracking-tight mt-0.5">
+                  <span className="text-[16px] font-bold text-text-neutral tracking-tight mt-0.5">
                     {allocation.percentage.toFixed(0)}%
                   </span>
                 </div>

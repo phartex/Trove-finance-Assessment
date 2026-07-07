@@ -16,15 +16,15 @@ export default function NetWorthCard({ summary }: NetWorthCardProps) {
   const timeframes = ['1D', '1W', '1M', 'ALL'];
 
   return (
-    <div className="bg-white rounded-2xl border-2 border-slate-200 p-6 flex flex-col justify-between h-[300px]">
+    <div className="bg-white rounded-2xl border-2 border-border p-6 flex flex-col justify-between h-[300px]">
       
       {/* Top Meta Bar: Title on Left, Custom Tab Filter Switcher on Right */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <span className="text-[15px] font-semibold text-slate-500">Total Net Worth</span>
+          <span className="text-[20px] font-semibold text-text-neutral">Total Net Worth</span>
           <button
             onClick={() => setShowBalance(!showBalance)}
-            className="p-1 text-slate-400 hover:text-slate-600 transition-colors"
+            className="p-1 text-slate-400 hover:text-text-neutral transition-colors"
             title={showBalance ? 'Hide balance' : 'Show balance'}
           >
             {showBalance ? (
@@ -50,7 +50,7 @@ export default function NetWorthCard({ summary }: NetWorthCardProps) {
               className={`text-xs font-semibold px-3 py-1.5 rounded-full transition-all ${
                 activeTimeframe === tf
                   ? 'bg-[#EBF5F2] text-[#00664F]'
-                  : 'text-slate-400 hover:text-slate-600'
+                  : 'text-text-neutral hover:text-slate-600'
               }`}
             >
               {tf}
@@ -61,7 +61,7 @@ export default function NetWorthCard({ summary }: NetWorthCardProps) {
 
       {/* Numerical Metrics: Balance and Trending Indicators */}
       <div className="flex items-baseline gap-3 mb-1">
-        <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
+        <h2 className="text-[28px] font-bold text-text-default tracking-tight">
           {showBalance 
             ? formatCurrency(summary.totalPortfolioValue, summary.currency)
             : '••••••'
@@ -98,7 +98,7 @@ export default function NetWorthCard({ summary }: NetWorthCardProps) {
           <path
             d="M 0 120 Q 120 110 200 70 T 400 90 T 500 20"
             fill="none"
-            stroke="#00664F"
+            stroke="#059A83"
             strokeWidth="3"
             strokeLinecap="round"
           />

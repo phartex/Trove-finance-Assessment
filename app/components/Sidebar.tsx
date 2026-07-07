@@ -39,10 +39,10 @@ export default function Sidebar({ userName, membershipType = "Premium Member" }:
             return (
               <button 
                 key={item.label} 
-                className={`flex items-center gap-3 w-full p-3 my-4 rounded-lg font-medium text-sm lg:text-2xl transition-all duration-200 ${
+                className={`flex items-center gap-3 w-full p-3 my-4 rounded-lg font-medium text-[12px] transition-all duration-200 ${
                   item.active 
-                    ? 'bg-[#EBF5F2] text-[#00664F]' 
-                    : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800'
+                    ? 'bg-trove-green-light text-[#00664F]' 
+                    : 'text-text-default hover:bg-slate-100 hover:text-slate-800'
                 }`}
               >
                 <Icon size={20} />
