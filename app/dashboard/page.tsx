@@ -13,6 +13,8 @@ import AllocationBar from '../components/AllocationBar';
 import AccountList from '../components/AccountList';
 import StocksTab from '../components/StocksTab';
 import OrdersTab from '../components/OrdersTab';
+import Sidebar from '../components/Sidebar';
+import Header from '../components/Header';
 
 export default function DashboardPage() {
   const { logout, user } = useAuth();
@@ -20,7 +22,7 @@ export default function DashboardPage() {
   const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+console.log('User from AuthContext:', user);
   useEffect(() => {
     loadPortfolioData();
   }, []);
@@ -91,128 +93,102 @@ export default function DashboardPage() {
   const accountSummaries = getAccountSummaries(portfolioData.holdings);
 
   return (
-    <div className="min-h-screen bg-bg-page">
-      {/* Header */}
-      <header className="bg-card-surface border-b border-border px-4 lg:px-6 py-4 sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
-          {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 bg-trove-green rounded-xl flex items-center justify-center">
-              <svg 
-                className="w-5 h-5 text-white"
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2.5"
-              >
-                <path d="M3 3v18h18"/>
-                <path d="M18 17V9"/>
-                <path d="M13 17V5"/>
-                <path d="M8 17v-3"/>
-              </svg>
+    <div className="min-h-screen bg-bg-page flex overflow-hidden">
+      {/* Left Sidebar Pane */}
+      <Sidebar userName={portfolioData.user.name} />
+
+      {/* Right Canvas Area - Managed with flex-col to stick the header on top */}
+      <div className="flex-1 h-screen flex flex-col overflow-y-auto">
+        
+        {/* Header - Now flushes edge-to-edge perfectly */}
+        <Header />
+
+        {/* Scrollable Content Container - Removed excess side gaps */}
+        <main className="w-full max-w-[1400px] mx-auto px-6 py-8 lg:px-10 flex-1">
+          
+          {/* Top Section: Net Worth & Allocation */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8 items-start">
+            {/* Net Worth (Main Canvas Area) */}
+            <div className="lg:col-span-7 xl:col-span-8">
+              <NetWorthCard 
+                summary={portfolioData.summary} 
+                userName={portfolioData.user.name}
+              />
             </div>
-            <span className="text-lg font-bold text-text-default">
-              Trove
-            </span>
-          </div>
 
-          {/* User & Logout */}
-          <div className="flex items-center gap-4">
-            <span className="hidden md:block text-sm text-text-neutral">
-              {user?.email}
-            </span>
-            <button 
-              onClick={logout}
-              className="p-2 text-text-neutral hover:text-text-default hover:bg-bg-default rounded-xl transition-all"
-              title="Logout"
-            >
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                <polyline points="16 17 21 12 16 7" />
-                <line x1="21" y1="12" x2="9" y2="12" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-6xl mx-auto p-4 lg:p-6">
-        {/* Top Section: Net Worth & Allocation */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <NetWorthCard 
-            summary={portfolioData.summary} 
-            userName={portfolioData.user.name}
-          />
-          <AllocationBar 
-            allocations={sectorAllocations}
-            totalValue={portfolioData.summary.totalPortfolioValue}
-            currency={portfolioData.summary.currency}
-          />
-        </div>
-
-        {/* Account Summary */}
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold mb-4 text-text-default">
-            Account Breakdown
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <AccountList 
-              accounts={accountSummaries}
-              currency={portfolioData.summary.currency}
-            />
-          </div>
-        </div>
-
-        {/* Holdings & Transactions Tabs */}
-        <div className="bg-card-surface rounded-2xl border border-border p-6 mb-8 shadow-sm">
-          {/* Tab Navigation */}
-          <div className="flex gap-1 border-b border-border mb-6">
-            <button
-              onClick={() => setActiveTab('stocks')}
-              className={`px-5 py-3 text-sm font-medium transition-colors relative ${
-                activeTab === 'stocks' 
-                  ? 'text-trove-green border-b-2 border-trove-green' 
-                  : 'text-text-neutral hover:text-text-default'
-              }`}
-            >
-              Stocks
-            </button>
-            <button
-              onClick={() => setActiveTab('orders')}
-              className={`px-5 py-3 text-sm font-medium transition-colors relative ${
-                activeTab === 'orders' 
-                  ? 'text-trove-green border-b-2 border-trove-green' 
-                  : 'text-text-neutral hover:text-text-default'
-              }`}
-            >
-              Orders
-            </button>
-          </div>
-
-          {/* Tab Content */}
-          <div>
-            {activeTab === 'stocks' ? (
-              <StocksTab 
-                holdings={portfolioData.holdings}
+            {/* Sector Allocation Breakdown */}
+            <div className="lg:col-span-5 xl:col-span-4">
+              <AllocationBar 
+                allocations={sectorAllocations}
+                totalValue={portfolioData.summary.totalPortfolioValue}
                 currency={portfolioData.summary.currency}
               />
-            ) : (
-              <OrdersTab 
-                transactions={portfolioData.transactions}
+            </div>
+          </div>
+
+          {/* Account Summary */}
+          <div className="mb-8">
+            <h2 className="text-xl font-bold mb-5 text-text-default tracking-tight">
+              Account Breakdown
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <AccountList 
+                accounts={accountSummaries}
                 currency={portfolioData.summary.currency}
               />
-            )}
+            </div>
           </div>
-        </div>
 
-        {/* Footer */}
-        <footer className="text-center py-6">
-          <p className="text-xs text-text-disabled">
-            Last updated: {new Date(portfolioData.user.lastUpdated).toLocaleString()}
-          </p>
-        </footer>
-      </main>
+          {/* Holdings & Transactions Tabs */}
+          <div className="bg-card-surface rounded-2xl border border-border p-6 mb-8 shadow-sm">
+            {/* Tab Navigation */}
+            <div className="flex gap-1 border-b border-border mb-6">
+              <button
+                onClick={() => setActiveTab('stocks')}
+                className={`px-5 py-3 text-sm font-medium transition-colors relative ${
+                  activeTab === 'stocks' 
+                    ? 'text-trove-green border-b-2 border-trove-green font-semibold' 
+                    : 'text-text-neutral hover:text-text-default'
+                }`}
+              >
+                Stocks
+              </button>
+              <button
+                onClick={() => setActiveTab('orders')}
+                className={`px-5 py-3 text-sm font-medium transition-colors relative ${
+                  activeTab === 'orders' 
+                    ? 'text-trove-green border-b-2 border-trove-green font-semibold' 
+                    : 'text-text-neutral hover:text-text-default'
+                }`}
+              >
+                Orders
+              </button>
+            </div>
+
+            {/* Tab Content */}
+            <div>
+              {activeTab === 'stocks' ? (
+                <StocksTab 
+                  holdings={portfolioData.holdings}
+                  currency={portfolioData.summary.currency}
+                />
+              ) : (
+                <OrdersTab 
+                  transactions={portfolioData.transactions}
+                  currency={portfolioData.summary.currency}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* Footer */}
+          <footer className="text-center py-4 border-t border-border/40 mt-12">
+            <p className="text-xs text-text-disabled">
+              Last updated: {new Date(portfolioData.user.lastUpdated).toLocaleString()}
+            </p>
+          </footer>
+        </main>
+      </div>
     </div>
   );
 }
