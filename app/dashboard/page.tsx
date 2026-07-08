@@ -103,7 +103,7 @@ export default function DashboardPage() {
           {/* 2. Middle Sub-portfolio Balance Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {accountCards.map((card) => (
-              <div key={card.label} className="bg-white p-5 rounded-2xl border border-slate-100 flex flex-col justify-between shadow-sm min-h-[120px]">
+              <div key={card.label} className="bg-white p-5 rounded-2xl border border-slate-100 flex flex-col justify-between cursor-pointer shadow-sm min-h-[120px]">
                 <span className="text-[13px] font-bold text-slate-400 tracking-tight uppercase">{card.label}</span>
                 <span className="text-[18px] font-extrabold text-slate-900 mt-2">
                   {card.prefix}{card.value.toLocaleString(undefined, { minimumFractionDigits: 2 })}
@@ -148,7 +148,7 @@ export default function DashboardPage() {
 
                   return (
                     <div key={holding.id || assetTicker} className="bg-white border border-border rounded-2xl p-4 flex items-center justify-between shadow-sm">
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 ">
                         <div className="w-11 h-11 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center font-bold text-slate-500 text-sm">
                           {assetTicker.substring(0, 3)}
                         </div>
@@ -192,10 +192,7 @@ export default function DashboardPage() {
 
               <div className="flex flex-col bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
                 {/* Header Container */}
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-[16px] font-bold text-slate-900 tracking-tight">Recent Transactions</h3>
-                  <button className="text-xs font-bold text-[#00664F] hover:cursor-pointer hover:underline">View All</button>
-                </div>
+                
 
                 {/* Transactions List */}
                 <div className="flex flex-col divide-y divide-slate-200">
@@ -217,7 +214,7 @@ export default function DashboardPage() {
                       <div key={tx.id} className="py-4 flex items-center justify-between first:pt-0 last:pb-0">
                         {/* Left Side: Icon & Meta Details */}
                         <div className="flex items-center gap-3">
-                          <div className={`w-11 h-11 rounded-full flex items-center justify-center font-bold text-lg ${isBuy ? 'bg-[#D2F2E9] text-[#00664F]' : 'bg-[#D5EDE6] text-[#004D3C]'
+                          <div className={`w-12 h-12 rounded-full flex items-center font-bold justify-center text-2xl ${isBuy ? 'bg-accent-blue text-[#00664F]' : 'bg-[#D5EDE6] text-[#004D3C]'
                             }`}>
                             {isBuy ? '+' : '−'}
                           </div>
