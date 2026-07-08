@@ -90,24 +90,24 @@ export default function LoginPage() {
         {/* Logo/Brand */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-trove-green rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <svg 
+            <svg
               className="w-8 h-8 text-white"
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
               strokeWidth="2.5"
             >
-              <path d="M3 3v18h18"/>
-              <path d="M18 17V9"/>
-              <path d="M13 17V5"/>
-              <path d="M8 17v-3"/>
+              <path d="M3 3v18h18" />
+              <path d="M18 17V9" />
+              <path d="M13 17V5" />
+              <path d="M8 17v-3" />
             </svg>
           </div>
           <h1 className="text-2xl font-semibold text-text-default mb-1">
             Welcome to Trove
           </h1>
           <p className="text-sm text-text-neutral">
-            Sign in to access your portfolio
+            Sign in to your acount
           </p>
         </div>
 
@@ -115,9 +115,9 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           {/* Email Field */}
           <div>
-            <label 
-              htmlFor="email" 
-              className="block text-sm font-medium text-text-default mb-2"
+            <label
+              htmlFor="email"
+              className="block text-[12px] font-medium text-text-neutral mb-2"
             >
               Email Address
             </label>
@@ -133,9 +133,8 @@ export default function LoginPage() {
               }}
               placeholder="Enter your email"
               disabled={loginMutation.isPending}
-              className={`w-full px-4 py-3 bg-bg-default border rounded-xl text-sm text-text-default placeholder:text-text-disabled focus:outline-none focus:border-trove-green focus:bg-card-surface transition-colors ${
-                errors.email ? 'border-negative' : 'border-border'
-              }`}
+              className={`w-full px-4 py-3 bg-bg-default border rounded-xl text-sm text-text-default placeholder:text-text-disabled focus:outline-none focus:border-trove-green focus:bg-card-surface transition-colors ${errors.email ? 'border-negative' : 'border-border'
+                }`}
             />
             {errors.email && (
               <span className="text-xs text-negative mt-1 block">
@@ -146,9 +145,9 @@ export default function LoginPage() {
 
           {/* Password Field */}
           <div>
-            <label 
-              htmlFor="password" 
-              className="block text-sm font-medium text-text-default mb-2"
+            <label
+              htmlFor="password"
+              className="block text-[12px] font-medium text-text-neutral mb-2"
             >
               Password
             </label>
@@ -164,9 +163,8 @@ export default function LoginPage() {
               }}
               placeholder="Enter your password"
               disabled={loginMutation.isPending}
-              className={`w-full px-4 py-3 bg-bg-default border rounded-xl text-sm text-text-default placeholder:text-text-disabled focus:outline-none focus:border-trove-green focus:bg-card-surface transition-colors ${
-                errors.password ? 'border-negative' : 'border-border'
-              }`}
+              className={`w-full px-4 py-3 bg-bg-default border rounded-xl text-sm text-text-default placeholder:text-text-disabled focus:outline-none focus:border-trove-green focus:bg-card-surface transition-colors ${errors.password ? 'border-negative' : 'border-border'
+                }`}
             />
             {errors.password && (
               <span className="text-xs text-negative mt-1 block">
@@ -187,15 +185,28 @@ export default function LoginPage() {
                 <span>Signing in...</span>
               </>
             ) : (
-              'Sign In'
+              <span className='text-[12px]'>Sign In</span>
             )}
           </button>
         </form>
 
-        {/* Demo Credentials */}
-        <div className="mt-8 p-4 bg-bg-default rounded-xl text-xs text-text-neutral">
-          <strong className="text-text-default">Demo:</strong> Use any valid email and password (min 6 chars)
+        <div className='py-2 items-center text-center'>
+          <p className='text-trove-green text-[12px] my-7'>Forgot password?</p>
+
+          <p className='text-text-default text-[12px]'>Don't have an account?</p>
+
+
+          <button
+
+            className="w-full flex text-[12px] items-center justify-center gap-2 px-6 py-3 mt-8 text-text-neutral rounded-xl font-medium border-2 border-border disabled:opacity-60 disabled:cursor-not-allowed transition-colors mt-2"
+          >
+
+            <p className='text-[12px]'>Create a Trove Account</p>
+
+          </button>
         </div>
+
+
       </div>
     </div>
   );

@@ -1,14 +1,17 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   LayoutDashboard, 
   Briefcase, 
   History, 
   TrendingUp, 
   Settings, 
-  Plus 
+  Plus,
+  LogOut 
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 interface SidebarProps {
   userName: string;
@@ -16,6 +19,13 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ userName, membershipType = "Premium Member" }: SidebarProps) {
+  const { logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
   const navItems = [
     { label: 'Dashboard', icon: LayoutDashboard, active: true },
     { label: 'Portfolio', icon: Briefcase, active: false },
@@ -73,6 +83,8 @@ export default function Sidebar({ userName, membershipType = "Premium Member" }:
           <Plus size={18} />
           <span>Add Funds</span>
         </button>
+
+       
       </div>
     </aside>
   );
