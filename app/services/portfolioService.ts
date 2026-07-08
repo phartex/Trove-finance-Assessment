@@ -1,7 +1,6 @@
 /**
  * Portfolio Service Layer
- * 
- * This service wraps the JSON data and simulates asynchronous API calls.
+ * * This service wraps the JSON data and simulates asynchronous API calls.
  * It handles data transformation and deals with intentional data quirks.
  */
 
@@ -21,6 +20,7 @@ export interface Holding {
   totalCost?: number;
   gainLoss?: number;
   gainLossPercent?: number;
+  priceUnavailable?: boolean; // Flag for UI
 }
 
 export interface Transaction {
@@ -67,7 +67,7 @@ export interface AccountSummary {
   totalValue: number;
 }
 
-// Simulated delay for API calls
+// Simulated network delay
 const SIMULATED_DELAY = 800;
 
 // Sector colors for allocation chart
@@ -89,21 +89,12 @@ const DEFAULT_COLOR = '#687D7A';
  */
 function processHoldings(holdings: any[]): Holding[] {
   return holdings
-    .filter(holding => {
-      // Skip holdings with 0 shares (like DIS) - treated as closed positions
-      // These are excluded from the active portfolio
-      if (holding.shares === 0) {
-        return false;
-      }
-      return true;
-    })
+    .filter(holding => holding.shares > 0) // Skip closed positions completely
     .map(holding => {
       const shares = holding.shares;
       const avgCost = holding.avgCost;
       
       // Handle NVDA's currentPrice = 0
-      // Decision: Treat as "Price unavailable" - set currentValue to null/0
-      // and mark it specially so UI can show appropriate message
       const currentPrice = holding.currentPrice === 0 ? null : holding.currentPrice;
       const currentValue = currentPrice !== null ? shares * currentPrice : 0;
       const totalCost = shares * avgCost;
@@ -115,7 +106,7 @@ function processHoldings(holdings: any[]): Holding[] {
       return {
         ...holding,
         currentPrice: currentPrice !== null ? currentPrice : 0,
-        priceUnavailable: currentPrice === null, // Flag for UI
+        priceUnavailable: currentPrice === null, 
         currentValue,
         totalCost,
         gainLoss,
@@ -125,39 +116,33 @@ function processHoldings(holdings: any[]): Holding[] {
 }
 
 /**
- * Simulates API call to fetch portfolio data
+ * Fetch portfolio data wrapper matching TanStack fetcher signature
  */
 export async function fetchPortfolioData(): Promise<PortfolioData> {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     setTimeout(() => {
-      const processedHoldings = processHoldings(portfolioData.holdings);
-      
-      // Recalculate total portfolio value based on processed holdings
-      const totalPortfolioValue = processedHoldings.reduce(
-        (sum, h) => sum + (h.currentValue || 0), 
-        0
-      );
-
-      resolve({
-        user: portfolioData.user,
-        summary: {
-          ...portfolioData.summary,
-          totalPortfolioValue,
-        },
-        holdings: processedHoldings,
-        transactions: portfolioData.transactions.map(t => ({
-          ...t,
-          type: t.type as 'BUY' | 'SELL',
-          status: t.status as 'COMPLETED' | 'PENDING' | 'FAILED',
-        })),
-      });
+      try {
+        const processedHoldings = processHoldings(portfolioData.holdings);
+        
+        // Use the totalPortfolioValue directly from JSON (don't recalculate)
+        // This preserves the mock data value: 48250.75
+        resolve({
+          user: portfolioData.user,
+          summary: portfolioData.summary,
+          holdings: processedHoldings,
+          transactions: portfolioData.transactions.map(t => ({
+            ...t,
+            type: t.type as 'BUY' | 'SELL',
+            status: t.status as 'COMPLETED' | 'PENDING' | 'FAILED',
+          })),
+        });
+      } catch (err) {
+        reject(new Error('Failed to process structure parsing maps.'));
+      }
     }, SIMULATED_DELAY);
   });
 }
 
-/**
- * Calculates sector allocation from holdings
- */
 export function calculateSectorAllocation(holdings: Holding[]): SectorAllocation[] {
   const sectorMap = new Map<string, number>();
   
@@ -169,7 +154,7 @@ export function calculateSectorAllocation(holdings: Holding[]): SectorAllocation
 
   const totalValue = Array.from(sectorMap.values()).reduce((sum, val) => sum + val, 0);
 
-  const allocations: SectorAllocation[] = Array.from(sectorMap.entries())
+  return Array.from(sectorMap.entries())
     .map(([sector, value]) => ({
       sector,
       value,
@@ -177,13 +162,8 @@ export function calculateSectorAllocation(holdings: Holding[]): SectorAllocation
       color: SECTOR_COLORS[sector] || DEFAULT_COLOR,
     }))
     .sort((a, b) => b.value - a.value);
-
-  return allocations;
 }
 
-/**
- * Groups holdings by sector for account summary
- */
 export function getAccountSummaries(holdings: Holding[]): AccountSummary[] {
   const sectorMap = new Map<string, { positions: number; totalValue: number }>();
 
@@ -202,6 +182,35 @@ export function getAccountSummaries(holdings: Holding[]): AccountSummary[] {
       totalValue: data.totalValue,
     }))
     .sort((a, b) => b.totalValue - a.totalValue);
+}
+
+export function formatCurrency(value: number, currency: string = 'USD'): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
+/**
+ * Formats date to readable string
+ */
+export function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
+/**
+ * Formats percentage with sign
+ */
+export function formatPercentage(value: number): string {
+  const sign = value >= 0 ? '+' : '';
+  return `${sign}${value.toFixed(2)}%`;
 }
 
 /**
@@ -259,36 +268,4 @@ export function calculatePortfolioChange(summary: PortfolioSummary): {
     changePercent: Math.abs(changePercent),
     isPositive: change >= 0,
   };
-}
-
-/**
- * Formats currency with proper locale
- */
-export function formatCurrency(value: number, currency: string = 'USD'): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value);
-}
-
-/**
- * Formats percentage with sign
- */
-export function formatPercentage(value: number): string {
-  const sign = value >= 0 ? '+' : '';
-  return `${sign}${value.toFixed(2)}%`;
-}
-
-/**
- * Formats date to readable string
- */
-export function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
 }

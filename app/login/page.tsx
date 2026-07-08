@@ -1,15 +1,27 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 
+interface LoginData {
+  email: string;
+  password: string;
+}
+
+interface LoginResponse {
+  success: boolean;
+  error?: string;
+}
+
 export default function LoginPage() {
+  const router = useRouter();
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [loginError, setLoginError] = useState('');
 
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -35,26 +47,41 @@ export default function LoginPage() {
     return Object.keys(newErrors).length === 0;
   };
 
+  // TanStack Query mutation for login
+  const loginMutation = useMutation<LoginResponse, Error, LoginData>({
+    mutationFn: async (data: LoginData) => {
+      const result = await login(data.email, data.password);
+      return result;
+    },
+    onSuccess: (response) => {
+      if (response.success) {
+        toast.success('Login Successful', {
+          position: 'top-center',
+        });
+        // Navigate to dashboard
+        router.push('/dashboard');
+      } else {
+        toast.error(response.error || 'Login failed', {
+          position: 'top-center',
+        });
+      }
+    },
+    onError: (error) => {
+      toast.error(error.message || 'An unexpected error occurred', {
+        position: 'top-center',
+      });
+    },
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoginError('');
 
     if (!validateForm()) {
       return;
     }
 
-    setIsLoading(true);
-
-    try {
-      const result = await login(email, password);
-      if (!result.success) {
-        setLoginError(result.error || 'Login failed. Please try again.');
-      }
-    } catch {
-      setLoginError('An unexpected error occurred. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
+    // Trigger the mutation
+    loginMutation.mutate({ email, password });
   };
 
   return (
@@ -105,7 +132,7 @@ export default function LoginPage() {
                 }
               }}
               placeholder="Enter your email"
-              disabled={isLoading}
+              disabled={loginMutation.isPending}
               className={`w-full px-4 py-3 bg-bg-default border rounded-xl text-sm text-text-default placeholder:text-text-disabled focus:outline-none focus:border-trove-green focus:bg-card-surface transition-colors ${
                 errors.email ? 'border-negative' : 'border-border'
               }`}
@@ -136,7 +163,7 @@ export default function LoginPage() {
                 }
               }}
               placeholder="Enter your password"
-              disabled={isLoading}
+              disabled={loginMutation.isPending}
               className={`w-full px-4 py-3 bg-bg-default border rounded-xl text-sm text-text-default placeholder:text-text-disabled focus:outline-none focus:border-trove-green focus:bg-card-surface transition-colors ${
                 errors.password ? 'border-negative' : 'border-border'
               }`}
@@ -148,20 +175,13 @@ export default function LoginPage() {
             )}
           </div>
 
-          {/* General Error */}
-          {loginError && (
-            <div className="px-4 py-3 bg-red-100 rounded-xl text-sm text-negative">
-              {loginError}
-            </div>
-          )}
-
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={loginMutation.isPending}
             className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-trove-green text-white rounded-xl font-medium hover:bg-trove-green/90 disabled:opacity-60 disabled:cursor-not-allowed transition-colors mt-2"
           >
-            {isLoading ? (
+            {loginMutation.isPending ? (
               <>
                 <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 <span>Signing in...</span>

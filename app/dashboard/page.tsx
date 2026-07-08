@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../context/AuthContext';
 import {
   fetchPortfolioData,
   calculateSectorAllocation,
-  getAccountSummaries,
-  PortfolioData,
   formatCurrency
 } from '../services/portfolioService';
 import NetWorthCard from '../components/NetWorthCard';
@@ -15,29 +14,22 @@ import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 
 export default function DashboardPage() {
-  const { logout, user } = useAuth();
-  const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { logout } = useAuth();
 
-  useEffect(() => {
-    loadPortfolioData();
-  }, []);
+  // TanStack Query orchestration replaces useState + useEffect hooks entirely
+  const {
+    data: portfolioData,
+    isLoading,
+    isError,
+    refetch
+  } = useQuery({
+    queryKey: ['portfolioData'],
+    queryFn: fetchPortfolioData,
+    staleTime: 1000 * 60 * 5, // Keep cache fresh for 5 minutes
+  });
 
-  const loadPortfolioData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await fetchPortfolioData();
-      setPortfolioData(data);
-    } catch (err) {
-      setError('Failed to load portfolio data. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
+  // Loading view state matching layout
+  if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#F2F6F6] gap-4">
         <div className="w-10 h-10 border-2 border-transparent border-t-[#00664F] rounded-full animate-spin" />
@@ -46,7 +38,8 @@ export default function DashboardPage() {
     );
   }
 
-  if (error || !portfolioData) {
+  // Error boundary view state matching layout
+  if (isError || !portfolioData) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#F2F6F6] p-6">
         <div className="bg-white rounded-2xl border border-slate-100 p-6 max-w-md w-full text-center shadow-sm">
@@ -56,9 +49,9 @@ export default function DashboardPage() {
             <line x1="12" y1="16" x2="12.01" y2="16" />
           </svg>
           <h3 className="text-lg font-semibold mb-2 text-slate-800">Error Loading Data</h3>
-          <p className="text-slate-500 mb-6">{error || 'Something went wrong'}</p>
+          <p className="text-slate-500 mb-6">Something went wrong while pulling portfolio ledgers.</p>
           <div className="flex gap-4 justify-center">
-            <button onClick={loadPortfolioData} className="px-6 py-3 bg-[#00664F] text-white rounded-xl font-medium hover:bg-[#004d3c] transition-colors">
+            <button onClick={() => refetch()} className="px-6 py-3 bg-[#00664F] text-white rounded-xl font-medium hover:bg-[#004d3c] transition-colors">
               Try Again
             </button>
             <button onClick={logout} className="px-6 py-3 bg-slate-100 text-slate-700 rounded-xl font-medium hover:bg-slate-200 transition-colors">
@@ -70,11 +63,9 @@ export default function DashboardPage() {
     );
   }
 
-  // Filter out DIS (0 shares) so it won't impact our live summary arrays or dynamic visual charts
-  const validHoldings = portfolioData.holdings.filter(h => h.shares > 0);
-
+  // Pre-filtered downstream data matrices
+  const validHoldings = portfolioData.holdings;
   const sectorAllocations = calculateSectorAllocation(validHoldings);
-  const accountSummaries = getAccountSummaries(validHoldings);
 
   const accountCards = [
     { label: 'US Portfolio', value: 32140.00, change: '+ 2.4%', isUp: true, prefix: '$' },
@@ -87,7 +78,7 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-bg-page flex overflow-hidden">
       <Sidebar userName={portfolioData.user.name} />
 
-      <div className="flex-1 h-screen flex flex-col overflow-y-auto bg-[#F2F6F6]">
+      <div className="flex-1 h-screen bg-bg-canvas flex flex-col overflow-y-auto bg-[#F2F6F6]">
         <Header />
 
         <main className="w-full mx-auto px-6 py-8 lg:px-10 flex-1 flex flex-col gap-8">
@@ -110,21 +101,26 @@ export default function DashboardPage() {
           </div>
 
           {/* 2. Middle Sub-portfolio Balance Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 ">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {accountCards.map((card) => (
-              <div key={card.label} className="bg-white p-5 rounded-2xl border-2 border-border flex flex-col justify-between shadow-sm min-h-[120px]">
-                <span className="text-[14px] font-bold text-text-neutral tracking-tight uppercase">{card.label}</span>
-                <span className="text-[14px] font-bold text-text-default mt-2">
+              <div key={card.label} className="bg-white p-5 rounded-2xl border border-slate-100 flex flex-col justify-between shadow-sm min-h-[120px]">
+                <span className="text-[13px] font-bold text-slate-400 tracking-tight uppercase">{card.label}</span>
+                <span className="text-[18px] font-extrabold text-slate-900 mt-2">
                   {card.prefix}{card.value.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </span>
-                <span className={`text-[14px] font-bold mt-2 ${card.isUp ? 'text-success' : 'text-negative'}`}>
+                <span className={`text-[13px] font-bold mt-2 ${card.isUp ? 'text-[#00664F]' : 'text-red-500'}`}>
                   {card.change}
                 </span>
               </div>
             ))}
           </div>
 
+
+
+
           {/* 3. Bottom Section: Side-by-Side Dual Ledger Track (Holdings & Transactions) */}
+
+          
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
 
             {/* Holdings Column Left */}
@@ -187,7 +183,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Recent Transactions Column Right */}
-             <div>
+            <div>
 
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-[14px] font-bold text-slate-900 tracking-tight">Recent Transactions</h3>
@@ -260,19 +256,13 @@ export default function DashboardPage() {
 
             </div>
 
-
-
-
-
-
-
-
-           
-
-
-
-
           </div>
+
+
+
+
+
+
 
         </main>
       </div>

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "./context/AuthContext";
+import { QueryProvider } from "./providers/QueryProvider";
+import { ToastProvider } from "./providers/ToastProvider";
 
 export const metadata: Metadata = {
   title: "Trove - Investment Portfolio Dashboard",
@@ -23,9 +25,12 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col" style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        <QueryProvider>
+          <AuthProvider>
+            {children}
+            <ToastProvider />
+          </AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   );
